@@ -1,9 +1,5 @@
 import database from "infra/database.js";
 
-//versao do postgres
-//conexoes maximas
-//conexoes usadas
-
 async function status(request, response) {
   const updatedAt = new Date().toISOString();
   const maxConnections = (await database.query("SHOW max_connections;")).rows[0]
