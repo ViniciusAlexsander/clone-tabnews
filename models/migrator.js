@@ -1,7 +1,7 @@
 import database from "infra/database";
 import migrationRunner from "node-pg-migrate";
 import { resolve } from "node:path";
-import { ServiceError } from "./errors";
+import { ServiceError } from "infra/errors";
 
 const defaultMigrationsOptions = {
   dryRun: true,
