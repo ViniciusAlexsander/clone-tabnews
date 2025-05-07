@@ -2,51 +2,38 @@ import database from "infra/database";
 import { ValidationError } from "infra/errors";
 
 async function create(userInputValues) {
-  await validateUniqueEmail(userInputValues.email);
-  await validateUniqueUsername(userInputValues.username);
+  await validateUniqueUser(userInputValues.username, userInputValues.email);
 
   const newUser = await runInsertQuery(userInputValues);
   return newUser;
 
-  async function validateUniqueEmail(email) {
+  async function validateUniqueUser(username, email) {
     const results = await database.query({
       text: `
         SELECT
-          email
+          username, email
         FROM
           users
         WHERE
-          LOWER(email) = LOWER($1)
+          LOWER(username) = LOWER($1) OR LOWER(email) = LOWER($2)
         ;`,
-      values: [email],
+      values: [username, email],
     });
 
     if (results.rowCount > 0) {
-      throw new ValidationError({
-        message: "Email já cadastrado",
-        action: "Utilize outro email para realizar o cadastro",
-      });
-    }
-  }
-
-  async function validateUniqueUsername(username) {
-    const results = await database.query({
-      text: `
-        SELECT
-          username
-        FROM
-          users
-        WHERE
-          LOWER(username) = LOWER($1)
-        ;`,
-      values: [username],
-    });
-
-    if (results.rowCount > 0) {
-      throw new ValidationError({
-        message: "Username já cadastrado",
-        action: "Utilize outro username para realizar o cadastro",
-      });
+      const user = results.rows[0];
+      if (email && user.email.toLowerCase() === email.toLowerCase()) {
+        throw new ValidationError({
+          message: "Email já cadastrado",
+          action: "Utilize outro email para realizar o cadastro",
+        });
+      }
+      if (username && user.username.toLowerCase() === username.toLowerCase()) {
+        throw new ValidationError({
+          message: "Username já cadastrado",
+          action: "Utilize outro username para realizar o cadastro",
+        });
+      }
     }
   }
 
