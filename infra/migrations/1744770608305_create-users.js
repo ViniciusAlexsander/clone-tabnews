@@ -19,16 +19,18 @@ exports.up = (pgm) => {
     },
     //For reference: the maximum length that bcrypt can hash is 72 characters
     password: {
-      type: "varchar(72)",
+      type: "varchar(60)",
       notNull: true,
     },
     created_at: {
       type: "timestamptz",
-      default: pgm.func("now()"),
+      notNull: true,
+      default: pgm.func("timezone('UTC', now())"),
     },
     updated_at: {
       type: "timestamptz",
-      default: pgm.func("now()"),
+      notNull: true,
+      default: pgm.func("timezone('UTC', now())"),
     },
   });
 };
