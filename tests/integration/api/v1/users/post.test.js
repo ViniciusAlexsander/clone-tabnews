@@ -1,5 +1,7 @@
 import orchestrator from "tests/orchestrator";
 import { version as uuidVersion } from "uuid";
+import user from "models/user";
+import password from "models/password";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -29,13 +31,28 @@ describe("POST /api/v1/users", () => {
         id: responseBody.id,
         username: "cacambito",
         email: "cacambito@gmail.com",
-        password: "cacambito123",
+        password: responseBody.password,
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
       expect(uuidVersion(responseBody.id)).toBe(4);
       expect(Date.parse(responseBody.created_at)).not.toBeNaN();
       expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
+
+      const userInDatabase = await user.findOneByUsername(
+        responseBody.username,
+      );
+
+      const correctPasswordMatch = await password.compare(
+        "cacambito123",
+        userInDatabase.password,
+      );
+      const incorrectPasswordMatch = await password.compare(
+        "senhabadaras",
+        userInDatabase.password,
+      );
+      expect(correctPasswordMatch).toBe(true);
+      expect(incorrectPasswordMatch).toBe(false);
     });
 
     test("with duplicated email", async () => {
@@ -71,8 +88,8 @@ describe("POST /api/v1/users", () => {
 
       expect(response2Body).toEqual({
         name: "ValidationError",
-        message: "Email já cadastrado",
-        action: "Utilize outro email para realizar o cadastro",
+        message: "O email informado já está sendo utilizado",
+        action: "Utilize outro email para esta operação",
         status_code: 400,
       });
     });
@@ -110,8 +127,8 @@ describe("POST /api/v1/users", () => {
 
       expect(response2Body).toEqual({
         name: "ValidationError",
-        message: "Username já cadastrado",
-        action: "Utilize outro username para realizar o cadastro",
+        message: "O username informado já está sendo utilizado",
+        action: "Utilize outro username para esta operação",
         status_code: 400,
       });
     });
