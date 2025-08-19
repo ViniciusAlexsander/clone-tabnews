@@ -1,7 +1,6 @@
 import database from "infra/database";
-import password from "models/password";
 import { NotFoundError, ValidationError } from "infra/errors";
-import { use } from "react";
+import password from "models/password";
 
 async function create(userInputValues) {
   await validateUniqueUsername(userInputValues.username);
