@@ -5,6 +5,7 @@ import password from "models/password";
 async function create(userInputValues) {
   await validateUniqueUsername(userInputValues.username);
   await validateUniqueEmail(userInputValues.email);
+  validatePassword(userInputValues.password);
   await hashPasswordInObject(userInputValues);
 
   const newUser = await runInsertQuery(userInputValues);
@@ -158,6 +159,15 @@ async function validateUniqueEmail(email) {
         action: "Utilize outro email para esta operação",
       });
     }
+  }
+}
+
+async function validatePassword(password) {
+  if (password === "" || password === null || password === undefined) {
+    throw new ValidationError({
+      message: "Senha não pode ser vazio",
+      action: "Informe uma senha válida",
+    });
   }
 }
 

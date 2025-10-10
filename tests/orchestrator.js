@@ -1,6 +1,9 @@
 import retry from "async-retry";
+import { faker } from "@faker-js/faker";
+
 import database from "infra/database";
 import migrator from "models/migrator";
+import user from "models/user";
 
 async function waitForAllServices() {
   await waitForWebServer();
@@ -25,9 +28,20 @@ async function runPendingMigrations() {
   await migrator.runPendingMigrations();
 }
 
+async function createUser(userInputValues) {
+  return await user.create({
+    username:
+      userInputValues.username ||
+      faker.internet.username().replace(/[_.-]/g, ""),
+    email: userInputValues.email || faker.internet.email(),
+    password: userInputValues.password || faker.internet.password(),
+  });
+}
+
 const orchestrator = {
   waitForAllServices,
   clearDatabase,
   runPendingMigrations,
+  createUser,
 };
 export default orchestrator;
