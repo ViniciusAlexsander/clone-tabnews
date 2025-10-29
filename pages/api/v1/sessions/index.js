@@ -1,6 +1,7 @@
 import controller from "infra/controller";
+import { UnautorizedError } from "infra/errors";
+import authentication from "models/authentication";
 import { createRouter } from "next-connect";
-import user from "models/user";
 
 const router = createRouter();
 
@@ -11,6 +12,10 @@ export default router.handler(controller.errorHandlers);
 async function postHandler(request, response) {
   const userInputValues = request.body;
 
-  const newUser = await user.create(userInputValues);
-  return response.status(201).json(newUser);
+  const authenticatedUser = await authentication.getAuthenticatedUser(
+    userInputValues.email,
+    userInputValues.password,
+  );
+
+  return response.status(201).json({});
 }
