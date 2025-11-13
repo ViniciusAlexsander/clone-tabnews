@@ -24,7 +24,6 @@ async function findUserByEmail(providedEmail) {
   let storedUser;
   try {
     storedUser = await user.findOneByEmail(providedEmail);
-    console.log(storedUser);
   } catch (error) {
     if (error instanceof NotFoundError) {
       throw new UnautorizedError({

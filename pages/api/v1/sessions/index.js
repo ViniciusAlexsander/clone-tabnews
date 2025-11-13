@@ -1,6 +1,6 @@
 import controller from "infra/controller";
-import { UnautorizedError } from "infra/errors";
 import authentication from "models/authentication";
+import session from "models/session";
 import { createRouter } from "next-connect";
 
 const router = createRouter();
@@ -17,5 +17,7 @@ async function postHandler(request, response) {
     userInputValues.password,
   );
 
-  return response.status(201).json({});
+  const newSession = await session.create(authenticatedUser.id);
+
+  return response.status(201).json(newSession);
 }
