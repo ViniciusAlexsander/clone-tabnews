@@ -25,9 +25,34 @@ async function create(userId) {
   }
 }
 
+async function findOneValidByToken(token) {
+  const sessionFound = await runSelectQuery(token);
+
+  return sessionFound;
+
+  async function runSelectQuery(token) {
+    const results = await database.query({
+      text: `
+      SELECT
+        *
+      FROM
+        sessions
+      WHERE
+        token = $1
+        AND expires_at > NOW()
+      LIMIT
+        1`,
+      values: [token],
+    });
+
+    return results.rows[0];
+  }
+}
+
 const session = {
   create,
   EXPIRATION_IN_MILLISECONDS,
+  findOneValidByToken,
 };
 
 export default session;
