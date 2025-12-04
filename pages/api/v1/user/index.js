@@ -16,7 +16,5 @@ async function getHandler(request, response) {
 
   const userFound = await user.findOneById(sessionObject.user_id);
 
-  console.log(userFound);
-
   return response.status(200).json(userFound);
 }
