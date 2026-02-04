@@ -1,5 +1,5 @@
 import database from "infra/database";
-import { UnautorizedError } from "infra/errors";
+import { UnauthorizedError } from "infra/errors";
 import crypto from "node:crypto";
 
 const EXPIRATION_IN_MILLISECONDS = 60 * 60 * 24 * 30 * 1000; // 30 days
@@ -47,7 +47,7 @@ async function findOneValidByToken(token) {
     });
 
     if (results.rowCount === 0) {
-      throw new UnautorizedError({
+      throw new UnauthorizedError({
         message: "Usuário não possui sessão válida",
         action: "Verifique se este usuário está logado e tente novamente",
       });
@@ -82,10 +82,34 @@ async function renew(sessionId) {
   }
 }
 
+async function expireById(sessionId) {
+  const expiredSessionObject = await runUpdateQuery(sessionId);
+  return expiredSessionObject;
+
+  async function runUpdateQuery(sessionId) {
+    const results = await database.query({
+      text: `
+      UPDATE
+        sessions
+      SET
+        expires_at = expires_at - interval '1 year',
+        updated_at = NOW()
+      WHERE
+        id = $1
+      RETURNING
+        *`,
+      values: [sessionId],
+    });
+
+    return results.rows[0];
+  }
+}
+
 const session = {
   create,
   findOneValidByToken,
   renew,
+  expireById,
   EXPIRATION_IN_MILLISECONDS,
 };
 
