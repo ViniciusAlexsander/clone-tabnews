@@ -1,4 +1,4 @@
-import { NotFoundError, UnautorizedError } from "infra/errors";
+import { NotFoundError, UnauthorizedError } from "infra/errors";
 import password from "models/password";
 import user from "models/user";
 
@@ -9,8 +9,8 @@ async function getAuthenticatedUser(providedEmail, providedPassword) {
 
     return storedUser;
   } catch (error) {
-    if (error instanceof UnautorizedError) {
-      throw new UnautorizedError({
+    if (error instanceof UnauthorizedError) {
+      throw new UnauthorizedError({
         message: "Dados de autenticação inválidos",
         action: "Verifique os dados informados e tente novamente",
       });
@@ -26,7 +26,7 @@ async function findUserByEmail(providedEmail) {
     storedUser = await user.findOneByEmail(providedEmail);
   } catch (error) {
     if (error instanceof NotFoundError) {
-      throw new UnautorizedError({
+      throw new UnauthorizedError({
         message: "Email não confere",
         action: "Verifique os dados informados e tente novamente",
       });
@@ -45,7 +45,7 @@ async function validatePassword(providedPassword, storedPasswordHash) {
   );
 
   if (!correctPassword) {
-    throw new UnautorizedError({
+    throw new UnauthorizedError({
       message: "Senha não confere",
       action: "Verifique os dados informados e tente novamente",
     });

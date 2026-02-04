@@ -32,7 +32,7 @@ describe("POST /api/v1/sessions", () => {
       const responseBody = await response.json();
 
       expect(responseBody).toEqual({
-        name: "UnautorizedError",
+        name: "UnauthorizedError",
         message: "Dados de autenticação inválidos",
         action: "Verifique os dados informados e tente novamente",
         status_code: 401,
@@ -60,7 +60,7 @@ describe("POST /api/v1/sessions", () => {
       const responseBody = await response.json();
 
       expect(responseBody).toEqual({
-        name: "UnautorizedError",
+        name: "UnauthorizedError",
         message: "Dados de autenticação inválidos",
         action: "Verifique os dados informados e tente novamente",
         status_code: 401,
@@ -86,7 +86,7 @@ describe("POST /api/v1/sessions", () => {
       const responseBody = await response.json();
 
       expect(responseBody).toEqual({
-        name: "UnautorizedError",
+        name: "UnauthorizedError",
         message: "Dados de autenticação inválidos",
         action: "Verifique os dados informados e tente novamente",
         status_code: 401,
